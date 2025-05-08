@@ -1,0 +1,11 @@
+pyyaml>=5.1
+jinja2>=2.11.0
+psutil>=5.7.0
+requests>=2.23.0
+cryptography>=3.0
+python-dateutil>=2.8.1
+colorama>=0.4.3
+numpy>=1.19.0
+scipy>=1.5.0
+coverage>=6.4.0
+unittest-mock>=1.3.0

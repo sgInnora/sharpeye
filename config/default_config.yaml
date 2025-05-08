@@ -1,0 +1,735 @@
+# SharpEye Default Configuration
+
+# General settings
+general:
+  # Default output directory for reports and logs
+  output_dir: "/var/lib/sharpeye/reports"
+  
+  # Default log level (debug, info, warning, error, critical)
+  log_level: "info"
+  
+  # Default report format (text, json, html, pdf)
+  report_format: "text"
+  
+  # Email notifications
+  email:
+    enabled: false
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    use_tls: true
+    username: "alerts@example.com"
+    password: ""  # Set this in your secure local config
+    from_address: "sharpeye@example.com"
+    to_addresses: ["admin@example.com"]
+    alert_on_anomalies: true
+
+# Baseline settings
+baseline:
+  # Directory to store baseline data
+  directory: "/var/lib/sharpeye/baselines"
+  
+  # Expiration in days (0 means never expire)
+  expiration_days: 30
+  
+  # Auto-update baseline after scans without anomalies
+  auto_update: false
+
+# System resources module configuration
+system_resources:
+  # CPU usage threshold in percent
+  cpu_threshold: 90
+  
+  # Memory usage threshold in percent
+  memory_threshold: 90
+  
+  # Disk usage threshold in percent
+  disk_threshold: 90
+  
+  # Process monitoring settings
+  processes:
+    # Check processes running from unusual locations
+    check_unusual_locations: true
+    
+    # Check processes with high resource usage
+    check_high_resource_usage: true
+    
+    # Threshold for high CPU usage in percent
+    high_cpu_threshold: 80
+    
+    # Threshold for high memory usage in percent
+    high_memory_threshold: 50
+    
+    # List of paths considered suspicious when processes run from them
+    suspicious_paths:
+      - "/tmp"
+      - "/dev/shm"
+      - "/var/tmp"
+      - "/run/user"
+    
+    # Substrings in command names that are considered suspicious
+    suspicious_commands:
+      - "miner"
+      - "xmr"
+      - "crypto"
+      - "kworker"
+      - "./"
+      - "/tmp/"
+      - "curl"
+      - "wget"
+      - "nc "
+      - "netcat"
+      - "ncat"
+      - "bash -i"
+      - "perl -e"
+      - "python -c"
+      - "ruby -e"
+
+# User accounts module configuration
+user_accounts:
+  # Database path (if not specified, will use ~/.sharpeye/user_accounts.db)
+  database_path: "/var/lib/sharpeye/user_accounts.db"
+  
+  # Baseline file
+  baseline_file: "/var/lib/sharpeye/baselines/accounts.json"
+  
+  # Primary checks
+  check_sudo: true
+  check_shell: true
+  check_auth_logs: true
+  
+  # Enhanced security checks
+  check_home_security: true
+  check_password_policy: true
+  check_group_membership: true
+  check_privilege_escalation: true
+  check_mfa_status: true
+  check_login_patterns: true
+  
+  # Expected groups with sudo privileges
+  expected_sudo_groups:
+    - "sudo"
+    - "wheel"
+    - "admin"
+  
+  # Threshold for brute force detection
+  brute_force_threshold: 5
+  
+  # List of IPs considered suspicious for login attempts
+  suspicious_ips: []
+  
+  # Suspicious group memberships to check for
+  sensitive_groups:
+    - "root"
+    - "wheel"
+    - "sudo"
+    - "admin"
+    - "shadow"
+    - "disk"
+    - "adm"
+    - "docker"
+    - "lxd"
+  
+  # Password policy settings
+  password_policy:
+    max_days: 90         # Maximum password age
+    min_days: 1          # Minimum password age
+    warn_days: 7         # Warning period before expiration
+    min_length: 14       # Minimum password length
+  
+  # MFA configuration
+  mfa:
+    require_for_sudo: true    # Require MFA for sudo users
+    require_for_ssh: true     # Require MFA for SSH access
+    
+  # Login patterns analysis settings
+  login_patterns:
+    unusual_hours: [22, 23, 0, 1, 2, 3, 4, 5]   # 10 PM to 5 AM
+    max_sources: 3                              # Maximum number of source IPs per user
+    max_sessions: 2                             # Maximum simultaneous sessions
+
+  # Threat intelligence integration
+  threat_intelligence:
+    enabled: true
+    cache_dir: "/var/lib/sharpeye/cache/threat_intel"
+    cache_ttl: 86400  # 24 hours
+
+# Process analysis module configuration
+processes:
+  # Check for hidden processes
+  check_hidden: true
+  
+  # Check parent-child process relationships
+  check_relationships: true
+  
+  # Check process execution paths
+  check_execution_path: true
+  
+  # Check process file handles
+  check_file_handles: true
+  
+  # Check process network connections
+  check_network_connections: true
+  
+  # Process age threshold in seconds (newer processes get more scrutiny)
+  new_process_threshold: 3600
+
+# Network connections module configuration
+network:
+  # Check for unexpected listening ports
+  check_listening_ports: true
+  
+  # Check for suspicious outbound connections
+  check_outbound: true
+  
+  # Check for remote access services
+  check_remote_access: true
+  
+  # Check for ARP spoofing attacks
+  check_arp_spoofing: true
+  
+  # Check for network interfaces in promiscuous mode
+  check_promiscuous_mode: true
+  
+  # Check for invalid or suspicious SSL certificates
+  check_ssl_certificates: true
+  
+  # Check for suspicious traffic patterns
+  check_traffic_patterns: true
+  
+  # Check for insecure network services
+  check_network_services: true
+  
+  # Common legitimate ports that are expected to be open
+  expected_ports:
+    - 22    # SSH
+    - 80    # HTTP
+    - 443   # HTTPS
+    - 25    # SMTP
+    - 465   # SMTPS
+    - 587   # SMTP Submission
+    - 110   # POP3
+    - 995   # POP3S
+    - 143   # IMAP
+    - 993   # IMAPS
+    - 53    # DNS
+    - 123   # NTP
+  
+  # Known malicious/suspicious ports/services
+  suspicious_ports:
+    - 31337  # Back Orifice
+    - 12345  # NetBus
+    - 6667   # IRC (often used by botnets)
+    - 4444   # Metasploit default
+    - 5555   # Common backdoor
+    - 9000   # Common backdoor
+    - 1080   # SOCKS proxy
+    - 8080   # Alternative HTTP (often proxies)
+    - 3128   # Squid proxy
+  
+  # List of countries considered high-risk (using ISO country codes)
+  high_risk_countries:
+    - "KP"  # North Korea
+    - "RU"  # Russia
+    - "CN"  # China
+    - "IR"  # Iran
+  
+  # Enable IP geolocation lookup
+  enable_geolocation: false
+  
+  # Configure SSL certificate settings
+  trusted_certificate_authorities:
+    - "/etc/ssl/certs/ca-certificates.crt"   # Debian/Ubuntu
+    - "/etc/pki/tls/certs/ca-bundle.crt"     # RHEL/CentOS
+    - "/etc/ssl/ca-bundle.pem"               # OpenSUSE
+    - "/etc/pki/tls/cacert.pem"              # Alternative location
+    - "/usr/local/share/certs/ca-root-nss.crt"  # FreeBSD
+  
+  # Traffic pattern analysis settings
+  traffic_monitor_duration: 30  # seconds
+  packet_sample_size: 1000     # number of packets to sample
+  traffic_pattern_threshold: 0.7  # similarity threshold
+  
+  # Network service configuration
+  service_scan_timeout: 2      # seconds per port
+  service_scan_max_ports: 100  # max ports to scan
+  include_local_network: true  # scan local network
+  
+  # ARP settings
+  arp_cache_ttl: 3600         # seconds
+  arp_scan_interval: 300      # seconds between scans
+  
+  # Threat intelligence integration
+  threat_intelligence:
+    # Enable threat intelligence
+    enabled: true
+    
+    # Cache directory for threat intelligence data
+    cache_dir: "/var/lib/sharpeye/cache/threat_intel"
+    
+    # Cache TTL in seconds (86400 = 24 hours)
+    cache_ttl: 86400
+    
+    # Enabled feeds
+    enabled_feeds:
+      - "alienvault"
+      - "abuse_ch"
+      - "emerging_threats"
+      - "custom"
+    
+    # API keys for feeds that require them
+    api_keys:
+      alienvault: ""  # Your AlienVault OTX API key
+    
+    # Custom feeds
+    custom_feeds:
+      - name: "Blocklist.de"
+        url: "https://lists.blocklist.de/lists/all.txt"
+        type: "ip"
+        format: "text"
+        description: "Attackers detected by fail2ban"
+      
+      - name: "C2 Tracker"
+        url: "https://raw.githubusercontent.com/stamparm/maltrail/master/trails/static/malware/c2_tracker.txt"
+        type: "ip"
+        format: "text"
+        description: "C&C servers tracked by maltrail"
+      
+      - name: "URLhaus"
+        url: "https://urlhaus.abuse.ch/downloads/csv_recent/"
+        type: "url"
+        format: "csv"
+        description: "Recently detected malicious URLs"
+
+# File system module configuration
+filesystem:
+  # Check file integrity
+  check_integrity: true
+  
+  # Check for suspicious files
+  check_suspicious_files: true
+  
+  # Check for hidden files/directories
+  check_hidden: true
+  
+  # Check for setuid/setgid files
+  check_suid_sgid: true
+  
+  # Check for world-writable files
+  check_writable: true
+  
+  # Paths to check (empty means all mounted filesystems)
+  check_paths: []
+  
+  # Paths to exclude from checks
+  exclude_paths:
+    - "/proc"
+    - "/sys"
+    - "/dev"
+    - "/run"
+    - "/var/lib/docker"
+  
+  # File patterns considered suspicious
+  suspicious_patterns:
+    - "*.php.jpg"
+    - "*.sh.txt"
+    - "*.py.jpg"
+    - ".*rc"
+  
+  # Maximum file size to scan in bytes
+  max_file_size: 10485760  # 10MB
+
+# Log analysis module configuration
+logs:
+  # Check authentication logs
+  check_auth_logs: true
+  
+  # Check system logs
+  check_system_logs: true
+  
+  # Check application logs
+  check_application_logs: true
+  
+  # Check for cleared logs
+  check_cleared_logs: true
+  
+  # Log files to analyze
+  log_files:
+    - "/var/log/auth.log"
+    - "/var/log/secure"
+    - "/var/log/messages"
+    - "/var/log/syslog"
+    - "/var/log/kern.log"
+  
+  # Suspicious patterns to search for in logs
+  suspicious_patterns:
+    - "Failed password"
+    - "authentication failure"
+    - "Invalid user"
+    - "POSSIBLE BREAK-IN ATTEMPT"
+    - "Bad protocol version identification"
+    - "did not receive identification string"
+    - "segfault"
+    - "Out of memory"
+    - "Accepted password for root"
+    - "USER_AUTH_ROOT_PRIV"
+
+# Scheduled tasks module configuration
+scheduled_tasks:
+  # Database path (if not specified, will use ~/.sharpeye/scheduled_tasks.db)
+  database_path: "/var/lib/sharpeye/scheduled_tasks.db"
+  
+  # Common cron job locations
+  crontab_files:
+    - "/etc/crontab"
+    - "/var/spool/cron/crontabs"
+    - "/etc/cron.d"
+    - "/etc/cron.hourly"
+    - "/etc/cron.daily"
+    - "/etc/cron.weekly"
+    - "/etc/cron.monthly"
+  
+  # Systemd timer locations
+  systemd_timer_paths:
+    - "/etc/systemd/system"
+    - "/usr/lib/systemd/system"
+    - "/lib/systemd/system"
+    - "/run/systemd/system"
+  
+  # At job locations
+  at_job_paths:
+    - "/var/spool/at"
+    - "/var/spool/atjobs"
+  
+  # Anacron job locations
+  anacron_paths:
+    - "/etc/anacrontab"
+    - "/var/spool/anacron"
+  
+  # Other scheduled task locations
+  other_task_paths:
+    - "/etc/init.d"
+    - "/etc/rc.d"
+  
+  # Suspicious commands to look for in tasks (subset shown - full list in code)
+  suspicious_commands:
+    - "wget"
+    - "curl"
+    - "nc"
+    - "bash -i"
+    - "python -c"
+    - "perl -e"
+    - "base64 -d"
+    - "> /dev/null"
+    - "/tmp/"
+    - "/dev/shm/"
+  
+  # Known legitimate scheduled tasks (whitelist)
+  whitelist_patterns:
+    - "/etc/cron.daily/logrotate"
+    - "/etc/cron.daily/man-db"
+    - "logrotate"
+    - "tmpwatch"
+    - "backup"
+  
+  # Suspicious time patterns (e.g., middle of the night)
+  suspicious_time_patterns:
+    - [1, 4]  # 1 AM to 4 AM is considered suspicious
+  
+  # High frequency patterns threshold (runs per hour)
+  high_frequency_threshold: 6  # More than once every 10 minutes
+  
+  # Maximum allowed changes per task between scans
+  max_allowed_changes: 3
+  
+  # Check for new users with scheduled tasks
+  check_new_users: true
+  
+  # Threshold for script line count to be considered suspicious
+  script_size_threshold: 50
+
+# SSH configuration module
+ssh:
+  # Check authorized keys
+  check_authorized_keys: true
+  
+  # Check SSH config files
+  check_config: true
+  
+  # Check for weak algorithms
+  check_algorithms: true
+  
+  # Check for SSH tunnels
+  check_tunnels: true
+  
+  # Check for SSH key usage patterns
+  check_key_usage: true
+  
+  # Check for SSH brute force attempts
+  check_bruteforce: true
+  
+  # Check for SSH connections
+  check_connections: true
+  
+  # Check for SSH authentication issues
+  check_auth: true
+  
+  # Configure SSH analyzer settings
+  auth_log_paths:
+    - "/var/log/auth.log"
+    - "/var/log/secure"
+    - "/var/log/audit/audit.log"
+  
+  ssh_config_path: "/etc/ssh/sshd_config"
+  
+  ssh_key_paths:
+    - "/etc/ssh"
+    - "/root/.ssh"
+    - "/home"
+  
+  # Bruteforce detection settings
+  bf_time_window: 300  # 5 minutes
+  bf_attempt_threshold: 5  # 5 attempts
+  
+  # Secure ciphers
+  secure_ciphers:
+    - "chacha20-poly1305@openssh.com"
+    - "aes256-gcm@openssh.com"
+    - "aes128-gcm@openssh.com"
+    - "aes256-ctr"
+    - "aes192-ctr"
+    - "aes128-ctr"
+  
+  # Secure MACs
+  secure_macs:
+    - "hmac-sha2-512-etm@openssh.com"
+    - "hmac-sha2-256-etm@openssh.com"
+    - "umac-128-etm@openssh.com"
+    - "hmac-sha2-512"
+    - "hmac-sha2-256"
+    - "umac-128@openssh.com"
+  
+  # Secure key exchange algorithms
+  secure_kex:
+    - "curve25519-sha256@libssh.org"
+    - "curve25519-sha256"
+    - "diffie-hellman-group16-sha512"
+    - "diffie-hellman-group18-sha512"
+    - "diffie-hellman-group-exchange-sha256"
+  
+  # Configuration recommendations
+  recommended_settings:
+    PermitRootLogin: "no"
+    PasswordAuthentication: "no"
+    X11Forwarding: "no"
+    MaxAuthTries: 3
+    AllowAgentForwarding: "no"
+    AllowTcpForwarding: "no"
+    PermitEmptyPasswords: "no"
+    GatewayPorts: "no"
+    PermitTunnel: "no"
+    LogLevel: "VERBOSE"
+    ClientAliveInterval: 300
+    ClientAliveCountMax: 2
+    LoginGraceTime: 60
+
+# Kernel module analysis configuration
+kernel:
+  # Check for unsigned modules
+  check_unsigned: true
+  
+  # Check for suspicious modules
+  check_suspicious: true
+  
+  # Known suspicious module names
+  suspicious_modules:
+    - "hide"
+    - "rootkit"
+    - "cleaner"
+    - "diamorphine"
+    - "modhide"
+    - "kbeast"
+
+# Library analysis configuration
+libraries:
+  # Check for preloaded libraries
+  check_preload: true
+  
+  # Check for library hijacking
+  check_hijacking: true
+  
+  # Check dynamic linker configuration
+  check_ld_config: true
+
+# Privilege escalation detection configuration
+privileges:
+  # Check for SUID/SGID files
+  check_suid_sgid: true
+  
+  # Check for world-writable files
+  check_world_writable: true
+  
+  # Check for capabilities
+  check_capabilities: true
+  
+  # Expected SUID/SGID files (check only unexpected ones)
+  expected_suid_files: []
+
+# Rootkit detection configuration
+rootkit:
+  # Check for hidden processes
+  check_hidden_processes: true
+  
+  # Check for hidden ports
+  check_hidden_ports: true
+  
+  # Check for hidden files
+  check_hidden_files: true
+  
+  # Check for modified system commands
+  check_system_commands: true
+  
+  # Use chkrootkit if available
+  use_chkrootkit: true
+  
+  # Use rkhunter if available
+  use_rkhunter: true
+  
+  # System commands to verify
+  commands_to_verify:
+    - "ps"
+    - "ls"
+    - "netstat"
+    - "top"
+    - "find"
+    - "grep"
+    - "lsof"
+    - "ifconfig"
+    - "ss"
+    - "ip"
+
+# REST API configuration
+api:
+  # Enable the REST API
+  enabled: false
+  
+  # API listen address
+  listen_address: "127.0.0.1"
+  
+  # API listen port
+  listen_port: 8080
+  
+  # Enable SSL
+  ssl:
+    enabled: false
+    cert_file: "/etc/sharpeye/ssl/cert.pem"
+    key_file: "/etc/sharpeye/ssl/key.pem"
+  
+  # Authentication
+  auth:
+    enabled: true
+    api_key: ""  # Set this in your secure local config
+    
+  # CORS settings
+  cors:
+    enabled: false
+    allowed_origins: ["*"]
+    
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+
+# Cryptominer detection configuration
+cryptominer:
+  # Enable continuous background monitoring
+  continuous_monitoring: false
+  
+  # Monitoring interval in seconds
+  monitoring_interval: 60
+  
+  # Feature thresholds for heuristic detection
+  thresholds:
+    cpu_stability: 0.2      # Lower values indicate more stable (suspicious) CPU usage
+    cpu_min: 50.0           # Minimum CPU usage to consider suspicious
+    cpu_mean: 80.0          # Mean CPU usage to consider suspicious
+    cpu_time_growth_rate: 0.5  # CPU time growth rate to consider suspicious
+    cpu_autocorrelation: 0.7   # CPU usage autocorrelation to consider suspicious
+    cpu_spectral_entropy: 1.5   # CPU usage spectral entropy to consider suspicious
+  
+  # Keywords associated with cryptomining software
+  mining_keywords:
+    - "miner"
+    - "xmr"
+    - "monero"
+    - "eth"
+    - "ethereum"
+    - "btc"
+    - "bitcoin"
+    - "stratum"
+    - "mining"
+    - "hashrate"
+    - "cryptonight"
+    - "ethash"
+    - "zcash"
+    - "equihash"
+    - "randomx"
+    - "coin"
+    - "nicehash"
+    - "pool"
+  
+  # CPU profiler configuration
+  profiler_config:
+    # Sampling interval in seconds
+    sampling_interval: 5
+    
+    # Number of samples to keep in history
+    history_length: 12
+  
+  # Machine learning configuration
+  ml_config:
+    # Directory to store ML models
+    models_dir: "/var/lib/sharpeye/models"
+    
+    # Whether to use ML detection if available
+    use_ml: true
+
+# Alerting configuration
+alerting:
+  # Enable alerting
+  enabled: false
+  
+  # Alert on anomalies of specific severity
+  min_severity: "medium"  # (low, medium, high, critical)
+  
+  # Alert channels
+  channels:
+    # Email alerts
+    email:
+      enabled: false
+      # Uses email settings from general section
+    
+    # Webhook alerts
+    webhook:
+      enabled: false
+      url: ""
+      method: "POST"
+      headers: {}
+    
+    # Slack alerts
+    slack:
+      enabled: false
+      webhook_url: ""
+      channel: "#alerts"
+      username: "SharpEye"
+    
+    # Syslog alerts
+    syslog:
+      enabled: false
+      facility: "local0"
+      priority: "warning"
+  
+  # Alert throttling to prevent alert storms
+  throttling:
+    enabled: true
+    max_alerts_per_hour: 10
+    group_similar: true
