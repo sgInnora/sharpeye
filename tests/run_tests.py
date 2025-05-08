@@ -30,19 +30,25 @@ def run_tests_with_coverage(test_pattern=None, report_file=None, html_dir=None, 
     print(f"Base directory: {base_dir}")
     print(f"Source directory: {src_dir}")
     print(f"Python path: {sys.path}")
+    print(f"Python version: {sys.version}")
+    print(f"Operating system: {os.name} - {sys.platform}")
     
     # Ensure the modules directory exists to avoid import errors during testing
     modules_dir = os.path.join(src_dir, 'modules')
+    utils_dir = os.path.join(src_dir, 'utils')
     os.makedirs(modules_dir, exist_ok=True)
+    os.makedirs(utils_dir, exist_ok=True)
     
     # Create empty __init__.py files if they don't exist 
     # (needed for proper module imports during testing)
     init_files = [
         os.path.join(src_dir, '__init__.py'),
         os.path.join(modules_dir, '__init__.py'),
+        os.path.join(utils_dir, '__init__.py'),
         os.path.join(os.path.dirname(__file__), '__init__.py'),
         os.path.join(os.path.dirname(__file__), 'unit', '__init__.py'),
-        os.path.join(os.path.dirname(__file__), 'unit', 'modules', '__init__.py')
+        os.path.join(os.path.dirname(__file__), 'unit', 'modules', '__init__.py'),
+        os.path.join(os.path.dirname(__file__), 'unit', 'utils', '__init__.py')
     ]
     
     for init_file in init_files:
@@ -67,10 +73,21 @@ def run_tests_with_coverage(test_pattern=None, report_file=None, html_dir=None, 
         'user_accounts.py',
         'processes.py',
         'ssh_analyzer.py',
-        'rootkit_detector.py'
+        'rootkit_detector.py',
+        'cryptominer.py',
+        'scheduled_tasks.py',
+        'network.py'
+    ]
+    
+    # Add utility modules
+    util_modules = [
+        'ml_utils.py',
+        'reporter.py',
+        'threat_intelligence.py'
     ]
     
     source_paths = []
+    # Add module paths if they exist
     for module in module_list:
         module_path = os.path.join(modules_dir, module)
         if os.path.exists(module_path):
@@ -78,10 +95,20 @@ def run_tests_with_coverage(test_pattern=None, report_file=None, html_dir=None, 
         else:
             print(f"Warning: Module file {module_path} not found, will be excluded from coverage")
     
+    # Add util paths if they exist
+    for module in util_modules:
+        module_path = os.path.join(utils_dir, module)
+        if os.path.exists(module_path):
+            source_paths.append(module_path)
+        else:
+            print(f"Warning: Utility file {module_path} not found, will be excluded from coverage")
+    
     # If we don't have any source paths, just use the entire modules directory
     if not source_paths:
         print("No specific module files found, including entire modules directory")
         source_paths = [modules_dir]
+        if os.path.exists(utils_dir):
+            source_paths.append(utils_dir)
     
     print(f"Including these paths in coverage: {source_paths}")
     
@@ -112,13 +139,30 @@ def run_tests_with_coverage(test_pattern=None, report_file=None, html_dir=None, 
             'test_user_accounts.py',
             'test_processes.py',
             'test_ssh_analyzer.py',
-            'test_rootkit_detector.py'
+            'test_rootkit_detector.py',
+            'test_cryptominer.py',
+            'test_scheduled_tasks.py',
+            'test_network.py',
+            'test_ml_utils.py'
         ]
+        
+        # Check if we're on Linux - some tests only work on Linux
+        is_linux = sys.platform.startswith('linux')
         
         # Add each discovered test suite
         for pattern in test_patterns:
             try:
                 print(f"Looking for tests matching: {pattern}")
+                
+                # Skip Linux-specific tests on non-Linux platforms
+                if not is_linux and pattern in [
+                    'test_kernel_modules.py',
+                    'test_rootkit_detector.py',
+                    'test_library_inspection.py'
+                ]:
+                    print(f"Skipping Linux-specific tests: {pattern}")
+                    continue
+                
                 found_tests = test_loader.discover('tests', pattern=pattern)
                 if found_tests and found_tests.countTestCases() > 0:
                     print(f"Found {found_tests.countTestCases()} tests for {pattern}")
