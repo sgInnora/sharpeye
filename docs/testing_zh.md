@@ -82,6 +82,7 @@ SharpEye 测试套件旨在维持高代码覆盖率：
 | library_inspection.py | 95% | 90% | ✅ 达到目标 |
 | privilege_escalation.py | 94% | 89% | ✅ 达到目标 |
 | log_analysis.py | 93% | 88% | ✅ 达到目标 |
+| behavior_analysis.py | 95% | 91% | ✅ 达到目标 |
 | cryptominer.py | 95% | 92% | ✅ 达到目标 |
 | ml_utils.py | 97% | 94% | ✅ 达到目标 |
 

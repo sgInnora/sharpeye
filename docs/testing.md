@@ -82,6 +82,7 @@ The SharpEye test suite aims to maintain high code coverage:
 | library_inspection.py | 95% | 90% | ✅ Meets target |
 | privilege_escalation.py | 94% | 89% | ✅ Meets target |
 | log_analysis.py | 93% | 88% | ✅ Meets target |
+| behavior_analysis.py | 95% | 91% | ✅ Meets target |
 
 ## Known Test Issues
 
